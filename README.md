@@ -1,16 +1,26 @@
-# ymage
+# Ymage
 
-A new Flutter project.
+A new Flutter project that lets you reverse image search with Yandex easily.
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+## Current Features:
+- Reverse search an image from storage.
+- Reverse search an image from link.
+- Results of wbsites that contain the image.
+- Results of similar images.
+- Big preview on long press.
+- Big preview with options on tap:
+    - Reverse search the image.
+    - Share, copy or download the image.
+    -  Copy or open the website page containing the image.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Todo
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- [ ] Remove unnecessary comments/code.
+    ↻ In Progress: █▒▒▒▒▒▒▒▒▒
+
+- [ ] Change some ui colors and add logo in the appbar.
+
+- [ ] Add the possibility to share images and liks from other apps to this app.
+

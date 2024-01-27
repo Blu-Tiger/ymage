@@ -20,5 +20,7 @@ A new Flutter project that lets you reverse image search with Yandex easily.
 - [ ] Remove unnecessary comments/code.
     ↻ In Progress: █▒▒▒▒▒▒▒▒▒
 
+- [ ] Change some ui colors and add logo in the appbar.
+
 - [ ] Add the possibility to share images and liks from other apps to this app.
 

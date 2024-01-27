@@ -2,9 +2,7 @@
 
 A new Flutter project that lets you reverse image search with Yandex easily.
 
-
-
-## Current Features:
+## Current Features
 - Reverse search an image from storage.
 - Reverse search an image from link.
 - Results of wbsites that contain the image.
@@ -15,10 +13,16 @@ A new Flutter project that lets you reverse image search with Yandex easily.
     - Share, copy or download the image.
     -  Copy or open the website page containing the image.
 
+
+## Screenshots
+|![](fastlane/metadata/android/en-US/images/phoneScreenshots/1.png)|![](fastlane/metadata/android/en-US/images/phoneScreenshots/2.png)|![](fastlane/metadata/android/en-US/images/phoneScreenshots/3.png)|![](fastlane/metadata/android/en-US/images/phoneScreenshots/4.png)|
+|---|---|---|---|
+
+
 ## Todo
 
 - [ ] Remove unnecessary comments/code.
-    ↻ In Progress: █▒▒▒▒▒▒▒▒▒
+  - ↻ In Progress: █▒▒▒▒▒▒▒▒▒
 
 - [ ] Change some ui colors and add logo in the appbar.
 

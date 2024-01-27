@@ -1,4 +1,4 @@
-# Ymage
+# <img src="assets/logo.svg" width="30"> Ymage
 
 A new Flutter project that lets you reverse image search with Yandex easily.
 

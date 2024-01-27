@@ -14,3 +14,11 @@ A new Flutter project that lets you reverse image search with Yandex easily.
     - Reverse search the image.
     - Share, copy or download the image.
     -  Copy or open the website page containing the image.
+
+## Todo
+
+- [ ] Remove unnecessary comments/code.
+    ↻ In Progress: █▒▒▒▒▒▒▒▒▒
+
+- [ ] Add the possibility to share images and liks from other apps to this app.
+

@@ -9,10 +9,9 @@ import 'package:ymage/results.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Plugin must be initialized before using
   await FlutterDownloader.initialize(
-      // debug: true, // optional: set to false to disable printing logs to console (default: true)
-      // ignoreSsl: true // option: set to false to disable working with http links (default: false)
+      // debug: true,
+      // ignoreSsl: true
       );
   runApp(const MyApp());
 }
@@ -20,7 +19,6 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -93,7 +91,6 @@ class _MyHomePageState extends State<MyHomePage> {
             child: FilledButton.tonal(
                 onPressed: () => showModalBottomSheet(
                     shape: const RoundedRectangleBorder(
-                        // <-- SEE HERE
                         borderRadius: BorderRadius.vertical(
                       top: Radius.circular(15.0),
                     )),
@@ -194,11 +191,6 @@ class _MyHomePageState extends State<MyHomePage> {
             padding: const EdgeInsets.only(top: 60, bottom: 60),
             child: SizedBox(width: 200.0, height: 50.0, child: FilledButton(onPressed: search, child: const Text("Search"))))
       ])),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: getImage,
-      //   tooltip: 'Pick Image',
-      //   child: const Icon(Icons.add_a_photo),
-      // ),
     );
   }
 
@@ -226,11 +218,6 @@ class _MyHomePageState extends State<MyHomePage> {
           msg: "Use one of the inputs!", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.CENTER, timeInSecForIosWeb: 1, fontSize: 16.0);
       return;
     }
-    // if (_image != null && url != '') {
-    //   Fluttertoast.showToast(
-    //       msg: "Use only one of the inputs!", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.CENTER, timeInSecForIosWeb: 1, fontSize: 16.0);
-    //   return;
-    // }
     if (Uri.parse(url).isAbsolute == false && _image == null) {
       Fluttertoast.showToast(
           msg: "Invalid URL!", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.CENTER, timeInSecForIosWeb: 1, fontSize: 16.0);
@@ -244,30 +231,4 @@ class _MyHomePageState extends State<MyHomePage> {
       MaterialPageRoute(builder: (context) => ResultsScreen(url: url, image: _image, isLink: isLink)),
     );
   }
-
-  // Future<void> test() async {
-  //   String url = _urlController.text;
-  //   bool isLink = false;
-  //   if (_image == null && url == '') {
-  //     Fluttertoast.showToast(
-  //         msg: "Use one of the inputs!", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.CENTER, timeInSecForIosWeb: 1, fontSize: 16.0);
-  //     return;
-  //   }
-  //   if (_image != null && url != '') {
-  //     Fluttertoast.showToast(
-  //         msg: "Use only one of the inputs!", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.CENTER, timeInSecForIosWeb: 1, fontSize: 16.0);
-  //     return;
-  //   }
-  //   if (Uri.parse(url).isAbsolute == false && url != '') {
-  //     Fluttertoast.showToast(
-  //         msg: "Invalid URL!", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.CENTER, timeInSecForIosWeb: 1, fontSize: 16.0);
-  //     return;
-  //   }
-  //   if (url != '') {
-  //     isLink = true;
-  //   }
-  //   var (String imgsh, String imgid) = await Api().imagedownload(isLink, _image, url);
-  //   var site = await Api().imageSite(imgsh, imgid);
-  //   print(site);
-  // }
 }

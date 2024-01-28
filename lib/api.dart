@@ -24,10 +24,8 @@ class Api {
           options: options);
 
       if (response.statusCode == 200) {
-        // print(response);
         String imageID = response.data['image_id'];
         String imageShard = response.data['image_shard'].toString();
-        // print("$imageShard/$imageID");
         return (imageShard, imageID);
       }
     } else {
@@ -42,14 +40,11 @@ class Api {
           options: options);
 
       if (response.statusCode == 200) {
-        // print(response);
         String imageID = response.data['image_id'];
         String imageShard = response.data['image_shard'].toString();
-        // print("$imageShard/$imageID");
         return (imageShard, imageID);
       }
     }
-    // print("${response.statusCode} ${response.statusMessage}");
     if (response != null) {
       Fluttertoast.showToast(
           msg: "Error: ${response.statusCode} ${response.statusMessage}",
@@ -105,7 +100,7 @@ class Api {
             msg: "Error: null blocks", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.CENTER, timeInSecForIosWeb: 1, fontSize: 16.0);
         return {};
       }
-      // print(response.data);
+
       String htmlString = response.data["blocks"][3]["html"];
       Document document = parse(htmlString);
       Element? root = document.querySelector('.Root');
@@ -116,10 +111,8 @@ class Api {
         return {};
       }
       Map<String, dynamic> jsonData = jsonDecode(dataState!);
-      // print(jsonData);
       return jsonData;
     }
-    // print("${response.statusCode} ${response.statusMessage}");
     Fluttertoast.showToast(
         msg: "Error: ${response.statusCode} ${response.statusMessage}",
         toastLength: Toast.LENGTH_SHORT,
@@ -150,9 +143,8 @@ class Api {
         '{"blocks":[{"block":"extra-content","params":{},"version":2},{"block":{"block":"i-react-ajax-adapter:ajax"},"params":{"type":"ImagesApp","ajaxKey":"serpList/fetch"},"version":2}]}';
     String url =
         'https://yandex.com/images/search?format=json&request=$block&cbir_id=$imageShard/$imageID&p=$page&rpt=imagelike&serpListType=horizontal&text=url:"avatars.mds.yandex.net/get-images-cbir/$imageShard/$imageID/orig"&url=https://avatars.mds.yandex.net/get-images-cbir/$imageShard/$imageID/orig';
-    // print(url);
+
     Response response = await dio.get(url, options: options);
-    // print(response);
 
     if (response.statusCode == 200) {
       if (response.data['blocks'] == null) {
@@ -161,7 +153,7 @@ class Api {
         return [];
       }
       var entitiesID = response.data['blocks'][1]["params"]["adapterData"]["serpList"]["items"]["entities"].keys.toList();
-      // print(entitiesID);
+
       List<Map> entities = [];
       for (var id in entitiesID) {
         entities.add({
@@ -173,10 +165,8 @@ class Api {
           "origHeight": response.data['blocks'][1]["params"]["adapterData"]["serpList"]["items"]["entities"][id]["origHeight"],
         });
       }
-      // print(entities);
       return entities;
     }
-    // print("${response.statusCode} ${response.statusMessage}");
     Fluttertoast.showToast(
         msg: "Error: ${response.statusCode} ${response.statusMessage}",
         toastLength: Toast.LENGTH_SHORT,

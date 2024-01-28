@@ -70,11 +70,8 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
   Future<void> _loadMoreImages() async {
     if (_isLoadingImages) return;
     setState(() => _isLoadingImages = true);
-    // if (_imageShard == '' || _imageID == '') {
-    //   Navigator.pop(context);
-    // }
     final response = await Api().imagelike(_imageShard, _imageID, _page);
-    // final newResults = response;
+
     setState(() {
       _imageResults.addAll(response);
       _page++;
@@ -95,7 +92,7 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
   }
 
   void _onPointerDown(PointerDownEvent event) {
-    // _showDialogTimer = Timer(const Duration(seconds: 1), _showDialog);
+    _showDialogTimer = Timer(const Duration(seconds: 1), _showDialog);
     if (_dialogVisible) _showDialog();
   }
 
@@ -184,7 +181,6 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
                                 child: OutlinedButton(
                                     onPressed: () => showModalBottomSheet(
                                         shape: const RoundedRectangleBorder(
-                                            // <-- SEE HERE
                                             borderRadius: BorderRadius.vertical(
                                           top: Radius.circular(15.0),
                                         )),
@@ -354,7 +350,6 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
                                                     child: ClipRRect(
                                                         borderRadius: BorderRadius.circular(10.0),
                                                         child: Image.network(
-                                                          // _imageResults[index]['imgUrl'],
                                                           _siteResults[index]["originalImage"]['url'],
                                                           loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
                                                             if (loadingProgress == null) return child;
@@ -369,7 +364,6 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
                                                             ));
                                                           },
                                                           errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
-                                                            // print('Failed to load image: $_imageUrls[index]');
                                                             return SizedBox(
                                                               height: 130 *
                                                                   _siteResults[index]["originalImage"]["width"] /
@@ -461,7 +455,6 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
                                     })
                                   },
                                   child: Image.network(
-                                    // _imageResults[index]['imgUrl'],
                                     item['imgUrl'],
                                     fit: BoxFit.fill,
                                     loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
@@ -477,7 +470,6 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
                                       ));
                                     },
                                     errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
-                                      // print('Failed to load image: $_imageUrls[index]');
                                       return const SizedBox.shrink();
                                     },
                                   ),
@@ -514,7 +506,6 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
     WidgetsBinding.instance.addPostFrameCallback((_) {
       showModalBottomSheet(
           shape: const RoundedRectangleBorder(
-              // <-- SEE HERE
               borderRadius: BorderRadius.vertical(
             top: Radius.circular(15.0),
           )),
@@ -556,12 +547,6 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
                             Share.share(imgUrl);
                           },
                           icon: const Icon(Icons.share)),
-                      // IconButton(
-                      //   onPressed: () async {
-                      //     await Clipboard.setData(ClipboardData(text: imgUrl));
-                      //   },
-                      //   icon: const Icon(Icons.link),
-                      // ),
                       IconButton(
                           onPressed: () async {
                             Uri surl = Uri.parse(url);
@@ -628,7 +613,6 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
                         ));
                       },
                       errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
-                        // print('Failed to load image: $_imageUrls[index]');
                         return SizedBox(
                           height: 300 * aspectRatio,
                           width: 300,
@@ -659,12 +643,15 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
         directory = await getDownloadsDirectory();
       } else {
         directory = Directory('/storage/emulated/0/Download');
-        // Put file in global download folder, if for an unknown reason it didn't exist, we fallback
-        // ignore: avoid_slow_async_io
         if (!await directory.exists()) directory = await getExternalStorageDirectory();
       }
     } catch (err) {
-      // print("Cannot get download folder path");
+      Fluttertoast.showToast(
+          msg: "Cannot get download folder path",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          fontSize: 16.0);
     }
     return directory?.path;
   }
@@ -673,7 +660,7 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
     var path = await getDownloadPath();
     await FlutterDownloader.enqueue(
       url: url,
-      // headers: {}, // optional: header send with url (auth token etc)
+      // headers: {},
       savedDir: path!,
       showNotification: true, // show download progress in status bar (for Android)
       openFileFromNotification: true, // click on notification to open downloaded file (for Android)
@@ -726,7 +713,6 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
                   ));
                 },
                 errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
-                  // print('Failed to load image: $_imageUrls[index]');
                   return SizedBox(
                     height: 300 * aspectRatio,
                     width: 300,

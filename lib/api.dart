@@ -1,62 +1,108 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
+import 'package:flutter_launcher_icons/utils.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
+import 'package:image/image.dart' as img;
+import 'package:image_picker/image_picker.dart';
 
 final dio = Dio();
 
 class Api {
-  Future<(String, String)> imagedownload(isLink, image, url) async {
+  Future<(String, String)> imagedownload(bool isLink, XFile? image, String url, Function callbackProgress, Function callbackSate) async {
     if (image == null && isLink == false) {
       Fluttertoast.showToast(
           msg: "No image selected", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.CENTER, timeInSecForIosWeb: 1, fontSize: 16.0);
       return ('', '');
     }
     // ignore: avoid_init_to_null
-    Response? response = null;
     if (isLink) {
       Options options = Options(headers: {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0'});
+      try {
+        Response response = await dio.get(
+            'https://yandex.com/images-apphost/image-download?url=$url&images_avatars_size=preview&images_avatars_namespace=images-cbir',
+            options: options);
 
-      Response response = await dio.get(
-          'https://yandex.com/images-apphost/image-download?url=$url&images_avatars_size=preview&images_avatars_namespace=images-cbir',
-          options: options);
-
-      if (response.statusCode == 200) {
-        String imageID = response.data['image_id'];
-        String imageShard = response.data['image_shard'].toString();
-        return (imageShard, imageID);
+        if (response.statusCode == 200) {
+          String imageID = response.data['image_id'];
+          String imageShard = response.data['image_shard'].toString();
+          return (imageShard, imageID);
+        }
+        return ('', '');
+      } on DioException catch (e) {
+        if (e.response != null) {
+          Fluttertoast.showToast(
+              msg: "Error: ${e.response?.statusCode} ${e.message}",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              fontSize: 16.0);
+        } else {
+          Fluttertoast.showToast(
+              msg: "Unknown API Error", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.CENTER, timeInSecForIosWeb: 1, fontSize: 16.0);
+        }
+        return ('', '');
       }
     } else {
-      Uint8List bytes = await image.readAsBytes();
+      Uint8List bytes;
+      img.Image thumbnail = img.decodeImage(await image!.readAsBytes())!;
+      if (thumbnail.height > 1680 || thumbnail.width > 1680) {
+        img.Image resized;
+        if (thumbnail.height > thumbnail.width) {
+          resized = img.copyResize(thumbnail, height: 1680);
+        } else {
+          resized = img.copyResize(thumbnail, width: 1680);
+        }
+        bytes = Uint8List.fromList(img.encodePng(resized));
+      } else {
+        bytes = Uint8List.fromList(img.encodePng(thumbnail));
+      }
+      // Uint8List bytes = await image!.readAsBytes();
+      callbackSate('Uploading');
 
-      Options options = Options(
-          headers: {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0', 'Content-Type': 'image/jpeg'});
-
-      Response response = await dio.post(
-          'https://yandex.com/images-apphost/image-download?images_avatars_size=preview&images_avatars_namespace=images-cbir',
-          data: bytes,
-          options: options);
-
-      if (response.statusCode == 200) {
-        String imageID = response.data['image_id'];
-        String imageShard = response.data['image_shard'].toString();
-        return (imageShard, imageID);
+      Options options = Options(headers: {
+        'Accept': '*/*',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Content-Length': bytes.length,
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0',
+        'Connection': 'keep-alive',
+        'Content-Type': 'image/jpeg',
+        'Sec-Fetch-Dest': 'empty',
+        'Sec-Fetch-Mode': 'cors',
+        'Sec-Fetch-Site': 'same-origin',
+        'Pragma': 'no-cache',
+        'Cache-Control': 'no-cache'
+      });
+      try {
+        final Response response = await dio.post(
+            'https://yandex.com/images-apphost/image-download?images_avatars_size=preview&images_avatars_namespace=images-cbir',
+            data: bytes,
+            options: options, onSendProgress: (int sent, int total) {
+          callbackProgress(sent / total);
+        });
+        if (response.statusCode == 200) {
+          String imageID = response.data['image_id'];
+          String imageShard = response.data['image_shard'].toString();
+          return (imageShard, imageID);
+        }
+        return ('', '');
+      } on DioException catch (e) {
+        if (e.response != null) {
+          Fluttertoast.showToast(
+              msg: "Error: ${e.response?.statusCode} ${e.message}",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              fontSize: 16.0);
+        } else {
+          Fluttertoast.showToast(
+              msg: "Unknown API Error", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.CENTER, timeInSecForIosWeb: 1, fontSize: 16.0);
+        }
+        return ('', '');
       }
     }
-    if (response != null) {
-      Fluttertoast.showToast(
-          msg: "Error: ${response.statusCode} ${response.statusMessage}",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          fontSize: 16.0);
-    } else {
-      Fluttertoast.showToast(
-          msg: "Unknown API Error", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.CENTER, timeInSecForIosWeb: 1, fontSize: 16.0);
-    }
-    return ('', '');
   }
 
   Future<Map> imageSite(String imageShard, String imageID) async {

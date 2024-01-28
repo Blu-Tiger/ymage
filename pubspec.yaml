@@ -38,6 +38,7 @@ dependencies:
 
   image_picker: ^1.0.7
   cross_file_image: ^1.1.0
+  image: ^4.1.4
   dio: ^5.4.0
   fluttertoast: ^8.2.4
   share_plus: ^7.2.1

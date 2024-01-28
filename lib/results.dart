@@ -14,7 +14,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:ymage/api.dart';
 
 class ResultsScreen extends StatefulWidget {
-  const ResultsScreen({
+  ResultsScreen({
     super.key,
     required this.url,
     required this.image,
@@ -23,6 +23,7 @@ class ResultsScreen extends StatefulWidget {
   final XFile? image;
   final String url;
   final bool isLink;
+  final Api api = Api();
   @override
   State<ResultsScreen> createState() => _ResultsScreenState();
 }
@@ -40,13 +41,27 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
   String _imageShard = '';
   String _imageID = '';
   bool _isSite = true;
-  bool _isUploadingImage = false;
+  bool _isUploadingImage = true;
+  double? _uploadingProgress;
+  String _uploadingState = '';
   final ImagePicker _picker = ImagePicker();
   final TextEditingController _urlController = TextEditingController();
 
+  void _callbackUploadingProgress(progress) {
+    setState(() {
+      _uploadingProgress = progress;
+    });
+  }
+
+  void _callbackUploadingState(state) {
+    setState(() {
+      _uploadingState = state;
+    });
+  }
+
   Future<void> _loadSites() async {
     setState(() => _isLoadingSites = true);
-    var sites = await Api().imageSite(_imageShard, _imageID);
+    var sites = await widget.api.imageSite(_imageShard, _imageID);
     setState(() {
       _siteResults.addAll(sites["sites"]);
       _isLoadingSites = false;
@@ -56,21 +71,30 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
   Future<void> _uploadImage(bool isLink, XFile? image, String url) async {
     _siteResults = [];
     _imageResults = [];
-    setState(() => _isUploadingImage = true);
-    final (String imageShard, String imageID) = await Api().imagedownload(isLink, image, url);
     setState(() {
-      _imageShard = imageShard;
-      _imageID = imageID;
-      _isUploadingImage = false;
+      _isUploadingImage = true;
+      _uploadingState = 'Resizing';
     });
-    _loadSites();
-    _loadMoreImages();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final (String imageShard, String imageID) =
+          await widget.api.imagedownload(isLink, image, url, _callbackUploadingProgress, _callbackUploadingState);
+      setState(() {
+        _uploadingProgress = null;
+        _uploadingState = '';
+        _imageShard = imageShard;
+        _imageID = imageID;
+        _isUploadingImage = false;
+      });
+      _loadSites();
+      _loadMoreImages();
+    });
   }
 
   Future<void> _loadMoreImages() async {
     if (_isLoadingImages) return;
     setState(() => _isLoadingImages = true);
-    final response = await Api().imagelike(_imageShard, _imageID, _page);
+    final response = await widget.api.imagelike(_imageShard, _imageID, _page);
 
     setState(() {
       _imageResults.addAll(response);
@@ -82,7 +106,7 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
   @override
   void initState() {
     super.initState();
-    _uploadImage(widget.isLink, widget.image, widget.url);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _uploadImage(widget.isLink, widget.image, widget.url));
   }
 
   @override
@@ -160,6 +184,14 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
   }
 
   void getLInk(uploadUrl) {
+    if (uploadUrl == '') {
+      Fluttertoast.showToast(msg: "No URL!", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.CENTER, timeInSecForIosWeb: 1, fontSize: 16.0);
+    }
+    if (Uri.parse(uploadUrl).isAbsolute == false) {
+      Fluttertoast.showToast(
+          msg: "Invalid URL!", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.CENTER, timeInSecForIosWeb: 1, fontSize: 16.0);
+      return;
+    }
     _uploadImage(true, null, uploadUrl);
   }
 
@@ -226,8 +258,8 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
                                                   ),
                                                 ),
                                                 Padding(
-                                                    padding: const EdgeInsets.all(30),
-                                                    child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+                                                    padding: const EdgeInsets.all(10),
+                                                    child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
                                                       SizedBox(
                                                           width: 300.0,
                                                           child: TextField(
@@ -248,7 +280,7 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
                                                                   : null,
                                                             ),
                                                           )),
-                                                      IconButton(
+                                                      FilledButton(
                                                           onPressed: () {
                                                             setState(() {
                                                               getLInk(_urlController.text);
@@ -256,7 +288,7 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
 
                                                             Navigator.of(context).pop();
                                                           },
-                                                          icon: const Icon(Icons.search))
+                                                          child: const Icon(Icons.search))
                                                     ]))
                                               ],
                                             ),
@@ -267,12 +299,14 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
                                       borderRadius: BorderRadius.circular(20),
                                     ))),
                                     child: _isUploadingImage
-                                        ? const Center(
+                                        ? Center(
                                             child: Padding(
-                                            padding: EdgeInsets.all(30),
-                                            child: Column(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: [CircularProgressIndicator(), Text("Upoading")]),
+                                            padding: const EdgeInsets.all(30),
+                                            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                              CircularProgressIndicator(value: _uploadingProgress),
+                                              const SizedBox(height: 5),
+                                              Text(_uploadingState)
+                                            ]),
                                           ))
                                         : Image.network(
                                             "https://avatars.mds.yandex.net/get-images-cbir/$_imageShard/$_imageID/preview",
@@ -338,8 +372,7 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
                                         })
                                       },
                                   child: Card(
-                                      elevation: 0,
-                                      color: Theme.of(context).colorScheme.secondaryContainer,
+                                      elevation: 1,
                                       child: IntrinsicHeight(
                                           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                         Center(
@@ -398,7 +431,6 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
                                                           pauseBetween: const Duration(milliseconds: 50),
                                                           style: const TextStyle(
                                                             fontSize: 16.0,
-                                                            color: Color(0xFF212121),
                                                             fontWeight: FontWeight.bold,
                                                           )),
                                                       if (_siteResults[index]["description"] != '')

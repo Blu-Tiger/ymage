@@ -10,7 +10,7 @@ import 'package:image_picker/image_picker.dart';
 final dio = Dio();
 
 class Api {
-  Future<(String, String)> imagedownload(bool isLink, XFile? image, String url, Function callbackProgress, Function callbackSate) async {
+  Future<(String, String)> imagedownload(bool isLink, XFile? image, String url, Function callbackProgress) async {
     if (image == null && isLink == false) {
       Fluttertoast.showToast(
           msg: "No image selected", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.CENTER, timeInSecForIosWeb: 1, fontSize: 16.0);
@@ -34,15 +34,16 @@ class Api {
         if (e.response != null) {
           Fluttertoast.showToast(
               msg: "Error: ${e.response?.statusCode} ${e.message}",
-              toastLength: Toast.LENGTH_SHORT,
+              toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.CENTER,
               timeInSecForIosWeb: 1,
               fontSize: 16.0);
+          rethrow;
         } else {
           Fluttertoast.showToast(
               msg: "Unknown API Error", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.CENTER, timeInSecForIosWeb: 1, fontSize: 16.0);
         }
-        return ('', '');
+        rethrow;
       }
     } else {
       Uint8List bytes;
@@ -54,12 +55,11 @@ class Api {
         } else {
           resized = img.copyResize(thumbnail, width: 1680);
         }
-        bytes = Uint8List.fromList(img.encodePng(resized));
+        bytes = Uint8List.fromList(img.encodeJpg(resized, quality: 85));
       } else {
-        bytes = Uint8List.fromList(img.encodePng(thumbnail));
+        bytes = Uint8List.fromList(img.encodeJpg(thumbnail, quality: 85));
       }
       // Uint8List bytes = await image!.readAsBytes();
-      callbackSate('Uploading');
 
       Options options = Options(headers: {
         'Accept': '*/*',
@@ -91,7 +91,7 @@ class Api {
         if (e.response != null) {
           Fluttertoast.showToast(
               msg: "Error: ${e.response?.statusCode} ${e.message}",
-              toastLength: Toast.LENGTH_SHORT,
+              toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.CENTER,
               timeInSecForIosWeb: 1,
               fontSize: 16.0);
@@ -140,21 +140,10 @@ class Api {
         'https://yandex.com/images/touch/search?cbir_id=$imageShard/$imageID&rpt=imageview&url=https://avatars.mds.yandex.net/get-images-cbir/$imageShard/$imageID/orig&cbir_page=sites&format=json&request=$stringBlock';
     Response response = await dio.get(url, options: options);
     if (response.statusCode == 200) {
-      if (response.data == null) {
-        Fluttertoast.showToast(
-            msg: "Error: null blocks", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.CENTER, timeInSecForIosWeb: 1, fontSize: 16.0);
-        return {};
-      }
-
       String htmlString = response.data["blocks"][3]["html"];
       Document document = parse(htmlString);
       Element? root = document.querySelector('.Root');
       String? dataState = root?.attributes['data-state'];
-      if (root?.attributes['data-state'] == null) {
-        Fluttertoast.showToast(
-            msg: "Error: null data-state", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.CENTER, timeInSecForIosWeb: 1, fontSize: 16.0);
-        return {};
-      }
       Map<String, dynamic> jsonData = jsonDecode(dataState!);
       return jsonData;
     }

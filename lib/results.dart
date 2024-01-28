@@ -43,19 +43,12 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
   bool _isSite = true;
   bool _isUploadingImage = true;
   double? _uploadingProgress;
-  String _uploadingState = '';
   final ImagePicker _picker = ImagePicker();
   final TextEditingController _urlController = TextEditingController();
 
   void _callbackUploadingProgress(progress) {
     setState(() {
       _uploadingProgress = progress;
-    });
-  }
-
-  void _callbackUploadingState(state) {
-    setState(() {
-      _uploadingState = state;
     });
   }
 
@@ -73,19 +66,13 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
     _imageResults = [];
     setState(() {
       _isUploadingImage = true;
-      _uploadingState = 'Resizing';
     });
-
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final (String imageShard, String imageID) =
-          await widget.api.imagedownload(isLink, image, url, _callbackUploadingProgress, _callbackUploadingState);
-      setState(() {
-        _uploadingProgress = null;
-        _uploadingState = '';
-        _imageShard = imageShard;
-        _imageID = imageID;
-        _isUploadingImage = false;
-      });
+    final (String imageShard, String imageID) = await widget.api.imagedownload(isLink, image, url, _callbackUploadingProgress);
+    setState(() {
+      _uploadingProgress = null;
+      _imageShard = imageShard;
+      _imageID = imageID;
+      _isUploadingImage = false;
       _loadSites();
       _loadMoreImages();
     });
@@ -106,7 +93,7 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _uploadImage(widget.isLink, widget.image, widget.url));
+    _uploadImage(widget.isLink, widget.image, widget.url);
   }
 
   @override
@@ -305,7 +292,7 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
                                             child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                                               CircularProgressIndicator(value: _uploadingProgress),
                                               const SizedBox(height: 5),
-                                              Text(_uploadingState)
+                                              const Text("Uploading")
                                             ]),
                                           ))
                                         : Image.network(

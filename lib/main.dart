@@ -74,6 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   XFile? _image;
   String _version = '';
+  String _searchButton = 'Search';
 
   final _urlController = TextEditingController();
 
@@ -204,7 +205,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ])),
         Padding(
             padding: const EdgeInsets.only(top: 60, bottom: 60),
-            child: SizedBox(width: 200.0, height: 50.0, child: FilledButton(onPressed: search, child: const Text("Search")))),
+            child: SizedBox(width: 200.0, height: 50.0, child: FilledButton(onPressed: search, child: Text(_searchButton)))),
         Text(
           "v$_version",
           style: TextStyle(color: Theme.of(context).colorScheme.surfaceVariant),
@@ -230,6 +231,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void search() {
+    setState(() {
+      _searchButton = 'Loading Image';
+    });
+
     String url = _urlController.text;
     bool isLink = false;
     if (_image == null && url == '') {
@@ -248,6 +253,10 @@ class _MyHomePageState extends State<MyHomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => ResultsScreen(url: url, image: _image, isLink: isLink)),
-    );
+    ).then((value) {
+      setState(() {
+        _searchButton = 'Search';
+      });
+    });
   }
 }

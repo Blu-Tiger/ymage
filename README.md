@@ -23,10 +23,9 @@ A new Flutter project that lets you reverse image search with Yandex easily.
 
 - [x]  ~~Remove unnecessary comments/code.~~ Done: [d6a837c](https://github.com/Blu-Tiger/ymage/commit/d6a837c424cfeead4ff1a28b1f674151560d79bc)
 
-- [ ] Add upload progress bar.
-  - ↻ In Progress: █▒▒▒▒▒▒▒▒▒
+- [x] ~~Add upload progress bar.~~  Done: [70a518f](https://github.com/Blu-Tiger/ymage/commit/70a518f717d8c686b9df4b0cae36bfccd0a6c97b)
 
-- [ ] Change some ui colors and add logo in the appbar.
+- [x] ~~Change some ui colors and add logo in the appbar and some fixes.~~  Done: [70a518f](https://github.com/Blu-Tiger/ymage/commit/70a518f717d8c686b9df4b0cae36bfccd0a6c97b)
 
 - [ ] Add the possibility to share images and liks from other apps to this app.
 

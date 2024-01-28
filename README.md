@@ -21,7 +21,7 @@ A new Flutter project that lets you reverse image search with Yandex easily.
 
 ## Todo
 
-- [x]  ~~Remove unnecessary comments/code.~~ Done: https://github.com/Blu-Tiger/ymage/commit/d6a837c424cfeead4ff1a28b1f674151560d79bc
+- [x]  ~~Remove unnecessary comments/code.~~ Done: [d6a837c](https://github.com/Blu-Tiger/ymage/commit/d6a837c424cfeead4ff1a28b1f674151560d79bc)
 
 - [ ] Add upload progress bar.
   - ↻ In Progress: █▒▒▒▒▒▒▒▒▒

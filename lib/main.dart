@@ -5,6 +5,7 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:ymage/results.dart';
 
 Future<void> main() async {
@@ -72,8 +73,22 @@ class _MyHomePageState extends State<MyHomePage> {
   final ImagePicker _picker = ImagePicker();
 
   XFile? _image;
+  String _version = '';
 
   final _urlController = TextEditingController();
+
+  Future<void> _getVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      _version = packageInfo.version;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getVersion();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -189,7 +204,11 @@ class _MyHomePageState extends State<MyHomePage> {
         ])),
         Padding(
             padding: const EdgeInsets.only(top: 60, bottom: 60),
-            child: SizedBox(width: 200.0, height: 50.0, child: FilledButton(onPressed: search, child: const Text("Search"))))
+            child: SizedBox(width: 200.0, height: 50.0, child: FilledButton(onPressed: search, child: const Text("Search")))),
+        Text(
+          "v$_version",
+          style: TextStyle(color: Theme.of(context).colorScheme.surfaceVariant),
+        )
       ])),
     );
   }

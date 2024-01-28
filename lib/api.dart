@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
-import 'package:flutter_launcher_icons/utils.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';

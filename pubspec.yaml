@@ -52,6 +52,7 @@ dependencies:
   flutter_downloader: ^1.11.6
   flutter_launcher_icons: "^0.13.1"
   flutter_native_splash: ^2.3.9
+  package_info_plus: ^5.0.1
 
 flutter_launcher_icons:
   android: "launcher_icon"

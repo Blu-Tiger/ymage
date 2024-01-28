@@ -21,10 +21,10 @@ A new Flutter project that lets you reverse image search with Yandex easily.
 
 ## Todo
 
-- [ ] Remove unnecessary comments/code.
-  - ↻ In Progress: █▒▒▒▒▒▒▒▒▒
+- [x]  ~~Remove unnecessary comments/code.~~ Done: d6a837c
 
 - [ ] Add upload progress bar.
+  - ↻ In Progress: █▒▒▒▒▒▒▒▒▒
 
 - [ ] Change some ui colors and add logo in the appbar.
 
